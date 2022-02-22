@@ -11,6 +11,9 @@ WSU ID: 11658865
  -- Q3
  --3. Find the instructors who work in the “Machine Learning” field but are not teaching any courses. Return the instructor_id, first name, and lastname of those. 
  
+-- σ course_id=instructor_id (σ title='Introduction to Machine Learning' Course) 
+-- π instructor_id, firstName, lastName, email (Instructor ⨝ User)
+π instructor_id, firstName, lastName, email (σ title='Introduction to Machine Learning' Course ⨝ (Instructor ⨝ User) )
 
 -- Q4
 -- 4.	Find the pair of messages that are posted at the same meeting and at the same time but by different users. Return the common meeting_id and message_time of the two messages as well as the message_text and user_id of each message.
@@ -34,7 +37,9 @@ WSU ID: 11658865
  
 --Q9
 -- 9. Find the longest meeting(s) (i.e., the meetings with max duration). Return the meeting_id, title and duration of those meeting(s). 
-
+R1 = γduration; COUNT(title)→numMeetings  (Meeting)
+R2 = γ MAX(numMeetings)→maxNMeetings (R1)
+π meeting_id, title, duration (Meeting ⨝ R2)
  
 --Q10
 -- 10. Find the meeting(s) with the most number of attendees. Return the meeting title and the number of attendees for those meeting(s). 
