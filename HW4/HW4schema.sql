@@ -126,3 +126,4 @@ CREATE TABLE Mentions(
     FOREIGN KEY (message_id,meeting_id) REFERENCES Message(message_id,meeting_id),
     FOREIGN KEY (user_id) REFERENCES Users (user_id)
 );
+

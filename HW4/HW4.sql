@@ -1,12 +1,8 @@
--- #1 NEED TO FIX ORDER BY
--- SELECT *
--- FROM MeetingRecording MR, Users U, Meeting M
--- WHERE MR.start_time < '2022-01-17' 
--- ORDER BY U.user_id, U.firstname,  MR.meeting_id, M.title, M.meeting_time, MR.start_time, MR.recording_number
-
-SELECT *
-FROM MeetingRecording
-WHERE start_time < '2022-01-17' ;
+-- #1 Done
+SELECT Users.user_id, Users.firstname, MeetingRecording.meeting_id, Meeting.title, MeetingRecording.start_time, MeetingRecording.recording_number
+FROM MeetingRecording, Users, Meeting
+WHERE start_time < '2022-01-17' and Meeting.meeting_id = MeetingRecording.meeting_id and Meeting.instructor_id = Users.user_id
+ORDER BY Users.user_id, MeetingRecording.meeting_id, MeetingRecording.recording_number;
 
 -- #2 Need to figure out how to return names, and title
 SELECT COUNT(student_id), course_id
@@ -15,8 +11,8 @@ GROUP BY course_id
 HAVING COUNT(student_id) > 3 ;
 
 
---#3 Need to figure out how to return everything in right order
-SELECT DISTINCT E1.user_id, E1.meeting_id
+--#3 Double outputs
+SELECT DISTINCT E1.meeting_id, e1.message_time, e1.message_text, E1.user_id, E2.user_id
 FROM Message E1, Message E2
 WHERE E1.meeting_id = E2.meeting_id and E1.message_time = E2.message_time and E1.user_id <> E2.user_id;
 
@@ -88,9 +84,9 @@ FROM
 WHERE maxMessage.maxi = x.message_time;
 
 
--- #9 Need to order correctly
-SELECT *
-FROM
+-- #9 Done
+SELECT DISTINCT icount.meeting_id, Meeting.title, icounter, scounter
+FROM Message, Meeting,
 (
 	SELECT COUNT(message_id) as icounter, meeting_id
 	FROM (
@@ -110,7 +106,8 @@ FROM
 	) B
 	GROUP BY meeting_id
 ) as scount
-WHERE icount.meeting_id = scount.meeting_id and icounter > scounter;
+WHERE icount.meeting_id = scount.meeting_id and icounter > scounter and icount.meeting_id = Message.meeting_id and scount.meeting_id = Meeting.meeting_id
+ORDER BY icount.meeting_id;
  
 
 -- #10 Done
@@ -133,4 +130,4 @@ FROM Student,
     GROUP BY meeting_id
 ) c
 WHERE b.meeting_id = c.meeting_id and b.meeting_id = a.meeting_id 
-ORDER BY a.meeting_id
+ORDER BY a.meeting_id;
