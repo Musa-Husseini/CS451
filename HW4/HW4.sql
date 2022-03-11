@@ -12,13 +12,13 @@ WHERE start_time < '2022-01-17' ;
 SELECT COUNT(student_id), course_id
 FROM EnrolledIn
 GROUP BY course_id
-HAVING COUNT(student_id) > 3 
+HAVING COUNT(student_id) > 3 ;
 
 
 --#3 Need to figure out how to return everything in right order
 SELECT DISTINCT E1.user_id, E1.meeting_id
 FROM Message E1, Message E2
-WHERE E1.meeting_id = E2.meeting_id and E1.message_time = E2.message_time and E1.user_id <> E2.user_id
+WHERE E1.meeting_id = E2.meeting_id and E1.message_time = E2.message_time and E1.user_id <> E2.user_id;
 
 -- #4 Done
 
@@ -26,7 +26,7 @@ SELECT firstname, lastname
 FROM Users U1
 INNER JOIN AcademicFields A1 ON A1.instructor_id = U1.user_id and  A1.academicfield = 'Machine Learning' 
 INNER JOIN AcademicFields A2 ON A2.instructor_id = U1.user_id and  A2.academicfield = 'Artificial Intelligence' 
-GROUP BY U1.firstname, U1.lastname
+GROUP BY U1.firstname, U1.lastname;
 
 
 -- #5a Done
@@ -36,7 +36,7 @@ WHERE duration > (
     SELECT AVG(duration)
     FROM Meeting
 )
-ORDER BY meeting_id
+ORDER BY meeting_id;
 -- #5b Done
 
 SELECT meeting_id, title, passcode, meeting_time, duration, course_id, instructor_id
@@ -46,13 +46,13 @@ FROM Meeting NATURAL LEFT JOIN (
 	GROUP BY course_id
 
 ) A
-WHERE duration > classAvg
+WHERE duration > classAvg;
 
 -- #6 10/11 correct rows have an extra for some reason
 SELECT DISTINCT course_id, student_id
 FROM EnrolledIn E1 NATURAL JOIN Meeting M1 NATURAL LEFT JOIN Attended A1
 WHERE from_timestamp IS NULL
-ORDER BY student_id, course_id
+ORDER BY student_id, course_id;
 
 
 
@@ -67,7 +67,7 @@ FROM (
 	SELECT *
 	FROM EnrolledIn E1 NATURAL JOIN Meeting M1 NATURAL LEFT JOIN Attended A1
 	WHERE course_id = 'CptS451' and from_timestamp IS NULL
-) B
+) B;
 
 
 -- #8 Done
@@ -85,7 +85,7 @@ FROM
 
 ) as x
 
-WHERE maxMessage.maxi = x.message_time
+WHERE maxMessage.maxi = x.message_time;
 
 
 -- #9 Need to order correctly
@@ -110,7 +110,27 @@ FROM
 	) B
 	GROUP BY meeting_id
 ) as scount
-WHERE icount.meeting_id = scount.meeting_id and icounter > scounter
+WHERE icount.meeting_id = scount.meeting_id and icounter > scounter;
  
 
--- #10
+-- #10 Done
+SELECT DISTINCT a.meeting_id, a.title, user_count, record_count, total_time
+FROM Student,
+(
+	SELECT meeting_id, title
+	from Meeting
+) a,
+
+(
+	SELECT COUNT(student_id) user_count, meeting_id
+	FROM Attended 
+	GROUP BY meeting_id
+) b,
+
+(
+	SELECT meeting_id, count(recording_number) as record_count, SUM(EXTRACT (EPOCH FROM (end_time - start_time))) as total_time 
+	FROM MeetingRecording
+    GROUP BY meeting_id
+) c
+WHERE b.meeting_id = c.meeting_id and b.meeting_id = a.meeting_id 
+ORDER BY a.meeting_id
