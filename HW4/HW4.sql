@@ -70,12 +70,26 @@ FROM (
 ) B
 
 
--- #8
+-- #8 Done
+SELECT *
+FROM
+(
+	select MAX(message_time) as maxi
+	from Message
 
+) as maxMessage,
+(
+	select Message.message_time, Users.user_id, Users.firstname, Users.lastname, Message.message_text, Meeting.meeting_id
+	from Message, Meeting, Users, Student
+	where Message.meeting_id = Meeting.meeting_id and Message.user_id = Student.student_id and Users.user_id = Student.student_id
+
+) as x
+
+WHERE maxMessage.maxi = x.message_time
 
 
 -- #9 Need to order correctly
-SELECT icounter, scounter, icount.meeting_id, scount.meeting_id
+SELECT *
 FROM
 (
 	SELECT COUNT(message_id) as icounter, meeting_id
@@ -98,6 +112,5 @@ FROM
 ) as scount
 WHERE icount.meeting_id = scount.meeting_id and icounter > scounter
  
-
 
 -- #10
